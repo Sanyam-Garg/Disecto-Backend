@@ -1,6 +1,6 @@
-[] Models
-    [] Item
-    [] List
+[X] Models
+    [X] Item
+    [X] List
 
 [] Views
     [] GET total items list
