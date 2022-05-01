@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -72,15 +73,50 @@ class ListView(APIView):
         return Response(data, status=status.HTTP_200_OK)
     
     def post(self, request):
+        # Require name and quanity for adding an item
         if 'name' not in request.data:
             return Response({'err': 'Item must contain a name'})
         if 'quantity' not in request.data:
+            return Response({'err': 'Item must contain quantity'})
+
+        item = Item.objects.get(name=request.data['name'])
+        list = List.objects.all()[0]
+
+        if item.list != list:
+            # Add foreign key constraint
+            item.list = list
+            # Update available_quantity
+            item.available_stock -= request.data['quantity']
+            item.save()
+
+            return Response({'msg': 'Item added successfully'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'msg': 'Item already in the list. Use PUT method to update quantity.'}, status=status.HTTP_200_OK)
+    
+    def put(self, request):
+        # Require name and quanity for adding an item
+        if 'name' not in request.data:
             return Response({'err': 'Item must contain a name'})
 
         item = Item.objects.get(name=request.data['name'])
         list = List.objects.all()[0]
-        item.list = list
-        item.available_stock -= request.data['quantity']
-        item.save()
 
-        return Response({'msg': 'Item added successfully'}, status=status.HTTP_201_CREATED)
+        # Check if item in the list
+        if item.list == list:
+            # If 'delete' is set to 1 in the request, the item is deleted/unlinked from the list
+            if 'delete' in request.data and request.data['delete'] == 1:
+                item.available_stock = item.initial_stock
+                item.list = None
+                item.save()
+                return Response({'msg': 'Item deleted successfully'}, status=status.HTTP_200_OK)
+            # Else, quantity of the item in the list updated
+            elif 'quantity' in request.data:
+                item.available_stock = item.initial_stock - request.data['quantity']
+                item.save()
+                return Response({'msg': 'Item quantity updated successfully'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'msg': 'No update/delete specified'}, status=status.HTTP_200_OK)
+            
+        else:
+            # Return error if item not in list
+            return Response({'err': 'Item not in the list'}, status=status.HTTP_400_BAD_REQUEST)
