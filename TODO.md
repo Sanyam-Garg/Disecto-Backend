@@ -3,8 +3,8 @@
     [X] List
 
 [] Views
-    [] GET total items list
-    [] POST a new item to the database
+    [X] GET total items list
+    [X] POST a new item to the database
 
     [] POST the list of items to buy
     [] GET my list of items to buy
