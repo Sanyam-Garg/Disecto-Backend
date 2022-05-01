@@ -18,9 +18,10 @@ class Item(models.Model):
         stock --> The available quantity of the item
     """
     name = models.CharField(max_length=100, unique=True)
-    stock = models.IntegerField(default=100)
+    initial_stock = models.IntegerField(default=100)
+    available_stock = models.IntegerField(default=100)
     price = models.IntegerField(default=100)
-    list = models.ForeignKey(List, on_delete=models.CASCADE, null=True, blank=True)
+    list = models.ForeignKey(List, on_delete=models.CASCADE, related_name='list_items', null=True, blank=True)
 
     def __str__(self):
         return self.name

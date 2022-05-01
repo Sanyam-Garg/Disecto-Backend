@@ -17,7 +17,7 @@ class AllItems(APIView):
             for item in items:
                 data.append({
                     'name': item.name,
-                    'stock': item.stock,
+                    'available_stock': item.available_stock,
                     'price': item.price,
                 })
             
@@ -41,7 +41,7 @@ class AllItems(APIView):
             price = 100
         else:
             stock=request.data['price']
-        item = Item(name=request.data['name'], stock=stock, price=price)
+        item = Item(name=request.data['name'], initial_stock=stock, price=price)
         item.save()
 
         return Response({'msg': 'Item added successfully'}, status=status.HTTP_201_CREATED)
@@ -51,14 +51,8 @@ class ListView(APIView):
     This view maintains a single list in the database and
     provides the functionality to create a new list or update
     the previous one if already created.
-
-    A get request to this url generates the invoice for the present list.
     """
-    def post(self, request):
-        # if 'name' not in request.data:
-        #     return Response({'err': 'Item must contain a name'})
-        
-        # item = Item.objects.get(name=request.data['name'])
+    def get(self ,request):
         list = List.objects.all()
 
         if not list:
@@ -67,4 +61,26 @@ class ListView(APIView):
         else:
             list = list[0]
         
-        return Response({'list': list.title}, status=status.HTTP_201_CREATED)
+        data = [{'title': list.title}]
+        for item in list.list_items.all().order_by('name'):
+            data.append({
+                'name': item.name,
+                'quantity': item.initial_stock - item.available_stock,
+                'price': item.price
+            })
+        
+        return Response(data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        if 'name' not in request.data:
+            return Response({'err': 'Item must contain a name'})
+        if 'quantity' not in request.data:
+            return Response({'err': 'Item must contain a name'})
+
+        item = Item.objects.get(name=request.data['name'])
+        list = List.objects.all()[0]
+        item.list = list
+        item.available_stock -= request.data['quantity']
+        item.save()
+
+        return Response({'msg': 'Item added successfully'}, status=status.HTTP_201_CREATED)
