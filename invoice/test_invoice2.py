@@ -1,19 +1,11 @@
 from borb.pdf.page.page import Page
-
-# Create document
-
-
-# Add page
-
-
+from borb.pdf.pdf import PDF
 from borb.pdf.canvas.layout.page_layout.multi_column_layout import SingleColumnLayout
 from decimal import Decimal
-
 from borb.pdf.canvas.layout.table.fixed_column_width_table import FixedColumnWidthTable as Table
 from borb.pdf.canvas.layout.text.paragraph import Paragraph
 from borb.pdf.canvas.layout.layout_element import Alignment
-from datetime import datetime
-import random
+from borb.pdf.canvas.layout.table.fixed_column_width_table import FixedColumnWidthTable as Table
 
 def _build_invoice_information():    
     table_001 = Table(number_of_rows=8, number_of_columns=2)
@@ -21,36 +13,30 @@ def _build_invoice_information():
     table_001.add(Paragraph(" "))
     table_001.add(Paragraph("Invoice: #3634-69420", horizontal_alignment=Alignment.RIGHT))
 
-    table_001.add(Paragraph("Customer Name: Test User"))
+    table_001.add(Paragraph("Customer Name: Arnold"))
     table_001.add(Paragraph(" "))
 
-    table_001.add(Paragraph("Phone: 123456789"))
+    table_001.add(Paragraph("Phone: 9999420420"))
     table_001.add(Paragraph(" "))
 	
     table_001.add(Paragraph("Address: -----------"))   
     table_001.add(Paragraph(" ")) 
 
     table_001.add(Paragraph(" "))   
-    table_001.add(Paragraph("Virtual Company", font_size=30))
+    table_001.add(Paragraph("Sam Goods", font_size=30,  horizontal_alignment=Alignment.RIGHT))
 
     table_001.add(Paragraph(" "))   
-    table_001.add(Paragraph("+91-XXX-XXXX", horizontal_alignment=Alignment.RIGHT))
+    table_001.add(Paragraph("+91-78891-38650", horizontal_alignment=Alignment.RIGHT))
 
     table_001.add(Paragraph(" "))   
-    table_001.add(Paragraph("abc@vcompany.com", horizontal_alignment=Alignment.RIGHT))
+    table_001.add(Paragraph("sam@samgoods.com", horizontal_alignment=Alignment.RIGHT))
 
     table_001.add(Paragraph(" "))   
-    table_001.add(Paragraph("23rd Street, Xbcsdkl", horizontal_alignment=Alignment.RIGHT))
+    table_001.add(Paragraph("10th Street, Mumbai", horizontal_alignment=Alignment.RIGHT))
     
     table_001.set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))    		
     table_001.no_borders()
     return table_001
-
-
-
-from borb.pdf.canvas.layout.table.fixed_column_width_table import FixedColumnWidthTable as Table
-from borb.pdf.canvas.layout.table.table import TableCell
-from borb.pdf.canvas.color.color import HexColor, X11Color
 
 
 def _build_itemized_description_table(items):  
@@ -82,7 +68,7 @@ def build_thank_you():
     table_001.no_borders()
     return table_001
 
-from borb.pdf.pdf import PDF
+
 
 def get_pdf(pdf, company_table, items_table):
     page = Page()

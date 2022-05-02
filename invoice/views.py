@@ -9,6 +9,7 @@ from borb.pdf import Document
 from borb.pdf.page.page import Page
 from django.core.files import File
 from django.http import HttpResponse
+import os
 # Create your views here.
 class AllItems(APIView):
     """
@@ -138,7 +139,6 @@ class InvoiceView(APIView):
         else:
             list = list[0]
         
-        data = [{'title': list.title}]
         items = list.list_items.all().order_by('name')
         pdf = Document()
 
@@ -146,5 +146,9 @@ class InvoiceView(APIView):
         item_table = _build_itemized_description_table(items)
         get_pdf(pdf, company_table, item_table)
         
-        
-        return Response(data, status=status.HTTP_200_OK)
+        filepath = os.path.join('invoice.pdf')
+        f = open(filepath, 'rb')
+        pdfFile = File(f)
+        response = HttpResponse(pdfFile.read())
+        response['Content-Disposition'] = 'attachment; filename=invoice.pdf'
+        return response
