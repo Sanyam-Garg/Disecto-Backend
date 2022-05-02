@@ -142,8 +142,11 @@ class InvoiceView(APIView):
         items = list.list_items.all().order_by('name')
         pdf = Document()
 
+        # Build company information table
         company_table = _build_invoice_information()
+        # Build dynamic items table
         item_table = _build_itemized_description_table(items)
+        # Write to 'invoice.pdf'
         get_pdf(pdf, company_table, item_table)
         
         filepath = os.path.join('invoice.pdf')

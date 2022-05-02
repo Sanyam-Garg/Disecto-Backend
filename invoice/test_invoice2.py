@@ -45,6 +45,7 @@ def _build_itemized_description_table(items):
         table_001.add(Paragraph(h, font="Helvetica-Bold"))  
    
     total = 0
+    # Add items in the pdf and calculate total cost.
     for item in items:   
         table_001.add(Paragraph(item.name))  
         table_001.add(Paragraph("$ " + str(item.price)))  
