@@ -1,12 +1,9 @@
-from asyncio.windows_events import NULL
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from rest_framework import status
 from .test_invoice2 import _build_invoice_information, _build_itemized_description_table, get_pdf
 from borb.pdf import Document
-from borb.pdf.page.page import Page
 from django.core.files import File
 from django.http import HttpResponse
 import os
