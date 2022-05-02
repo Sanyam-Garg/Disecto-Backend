@@ -81,7 +81,9 @@ class ListView(APIView):
         if 'quantity' not in request.data:
             return Response({'err': 'Item must contain quantity'})
 
-        item = Item.objects.get(name=request.data['name'])
+        item = Item.objects.filter(name=request.data['name'])
+        if not item:
+            return Response({'err': 'Item with this name does not exist'}, status=status.HTTP_404_NOT_FOUND)
         list = List.objects.all()[0]
 
         if item.list != list:
