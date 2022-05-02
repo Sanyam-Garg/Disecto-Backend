@@ -4,7 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from rest_framework import status
-
+from .test_invoice2 import _build_invoice_information, _build_itemized_description_table, get_pdf
+from borb.pdf import Document
+from borb.pdf.page.page import Page
+from django.core.files import File
+from django.http import HttpResponse
 # Create your views here.
 class AllItems(APIView):
     """
@@ -120,3 +124,27 @@ class ListView(APIView):
         else:
             # Return error if item not in list
             return Response({'err': 'Item not in the list'}, status=status.HTTP_400_BAD_REQUEST)
+
+class InvoiceView(APIView):
+    """
+    A get request to this view allows the user to download the 
+    dynamically generated invoice.
+    """
+    def get(self, request):
+        list = List.objects.all()
+
+        if not list:
+            return Response({'err': 'No list has been created.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            list = list[0]
+        
+        data = [{'title': list.title}]
+        items = list.list_items.all().order_by('name')
+        pdf = Document()
+
+        company_table = _build_invoice_information()
+        item_table = _build_itemized_description_table(items)
+        get_pdf(pdf, company_table, item_table)
+        
+        
+        return Response(data, status=status.HTTP_200_OK)
