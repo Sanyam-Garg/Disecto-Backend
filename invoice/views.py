@@ -84,6 +84,7 @@ class ListView(APIView):
         item = Item.objects.filter(name=request.data['name'])
         if not item:
             return Response({'err': 'Item with this name does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        item = item[0]
         list = List.objects.all()[0]
 
         if item.list != list:
